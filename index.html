@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nexus Lines — Numbers for testing &amp; verification</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#0A0D13; --bg2:#0D1119; --surface:#121723; --surface2:#171D2B; --line:#242C3C;
+  --text:#EAF0F7; --muted:#8C97AC; --indigo:#7C6CFF; --cyan:#33E6C4; --warn:#F2B84B;
+  --glow: 0 0 0 1px rgba(124,108,255,.18), 0 20px 60px -20px rgba(124,108,255,.35);
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){--bg:#F3F4F8;--bg2:#ECEEF5;--surface:#FFFFFF;--surface2:#F7F8FC;--line:#DEE2ED;--text:#121626;--muted:#5B6479;color-scheme:light}
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:400 1rem/1.6 Inter,system-ui,sans-serif;overflow-x:hidden}
+h1,h2,h3{font-family:Sora,system-ui,sans-serif;margin:0;line-height:1.1;letter-spacing:-.01em}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.wrap{max-width:70rem;margin:0 auto;padding:0 1.25rem;position:relative;z-index:1}
+
+/* ---- ambient background: one slow orchestrated motion ---- */
+.aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.aurora i{position:absolute;width:52vmax;height:52vmax;border-radius:50%;filter:blur(90px);opacity:.28;
+  background:radial-gradient(circle at 30% 30%,var(--indigo),transparent 60%);animation:drift 26s ease-in-out infinite}
+.aurora i:nth-child(2){background:radial-gradient(circle at 60% 60%,var(--cyan),transparent 60%);top:30%;left:45%;animation-duration:32s;animation-delay:-8s;opacity:.2}
+.aurora i:nth-child(1){top:-15%;left:-10%}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(6vw,8vh) scale(1.12)}}
+.grid-fade{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:42px 42px;opacity:.12;mask-image:radial-gradient(ellipse 80% 55% at 50% 0%,#000 30%,transparent 72%)}
+@media(prefers-reduced-motion:reduce){.aurora i{animation:none}}
+
+/* ---- header ---- */
+header{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.15rem 0}
+.logo{display:flex;align-items:center;gap:.55rem;font:700 1.15rem Sora,sans-serif}
+.logo .mark{width:30px;height:30px;border-radius:9px;background:conic-gradient(from 220deg,var(--indigo),var(--cyan),var(--indigo));display:grid;place-items:center;font-size:.8rem;font-weight:800;color:#06070C;box-shadow:var(--glow)}
+nav{display:flex;align-items:center;gap:1.3rem}
+nav a{color:var(--muted);text-decoration:none;font-size:.92rem;font-weight:500}
+nav a:hover{color:var(--text)}
+.balance{display:flex;align-items:center;gap:.6rem;background:var(--surface);border:1px solid var(--line);border-radius:2rem;padding:.3rem .35rem .3rem 1rem;font-weight:600;font-variant-numeric:tabular-nums}
+.balance .dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+
+/* ---- buttons ---- */
+button,.btn{font:600 .92rem Inter,sans-serif;border:0;border-radius:.6rem;padding:.7rem 1.15rem;cursor:pointer;color:#06070C;
+  background:linear-gradient(135deg,var(--cyan),var(--indigo));transition:transform .15s ease, box-shadow .15s ease;text-decoration:none;display:inline-block}
+button:hover:not(:disabled),.btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px -10px rgba(124,108,255,.55)}
+button:active:not(:disabled){transform:translateY(0)}
+button:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+button.ghost:hover{border-color:var(--indigo)}
+
+/* ---- hero ---- */
+.hero{padding:4rem 0 3rem;display:grid;gap:2.5rem;grid-template-columns:1fr}
+@media(min-width:880px){.hero{grid-template-columns:1.15fr .85fr;align-items:center}}
+.eyebrow-pill{display:inline-flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:2rem;padding:.35rem .9rem .35rem .6rem;margin-bottom:1.2rem}
+.eyebrow-pill b{color:var(--cyan);font-weight:700}
+.hero h1{font-size:clamp(2.1rem,5.4vw,3.4rem);max-width:15ch}
+.hero h1 .grad{background:linear-gradient(100deg,var(--cyan),var(--indigo));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);max-width:34rem;margin:1.1rem 0 1.6rem;font-size:1.05rem}
+.hero .actions{display:flex;gap:.8rem;flex-wrap:wrap}
+
+/* live-feed card: the one characteristic hero element */
+.feed{background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--line);border-radius:1rem;padding:1.1rem;box-shadow:var(--glow);position:relative;overflow:hidden}
+.feed::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(124,108,255,.07),transparent 70%);pointer-events:none}
+.feed h3{font-size:.85rem;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem}
+.feed h3 .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.feed-row{display:flex;justify-content:space-between;align-items:center;padding:.55rem .6rem;border-top:1px dashed var(--line);font-size:.88rem;font-variant-numeric:tabular-nums;border-left:2px solid transparent;border-radius:.3rem;animation:rowglow 2.4s ease-in-out infinite}
+.feed-row:nth-child(2){animation-delay:.3s}
+.feed-row:nth-child(3){animation-delay:.6s}
+.feed-row:nth-child(4){animation-delay:.9s}
+.feed-row:nth-child(5){animation-delay:1.2s}
+@keyframes rowglow{0%,100%{border-left-color:transparent;background:transparent}50%{border-left-color:#35E27A;background:rgba(53,226,122,.07)}}
+@media(prefers-reduced-motion:reduce){.feed-row{animation:none}}
+.feed-row:first-of-type{border-top:0}
+.feed-row .svc{display:flex;align-items:center;gap:.5rem;color:var(--text)}
+.feed-row .flag{width:18px;text-align:center}
+.feed-row .ok{color:#35E27A;font-weight:600;font-size:.8rem;text-shadow:0 0 8px rgba(53,226,122,.6)}
+@media(prefers-reduced-motion:reduce){.feed h3 .dot{animation:none}}
+
+/* ---- sections ---- */
+section{padding:2.6rem 0}
+.section-head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:1.3rem;flex-wrap:wrap}
+.section-head h2{font-size:1.5rem}
+.section-head p{color:var(--muted);font-size:.92rem;margin:0}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:1rem;padding:1.3rem}
+#signup .card{max-width:27rem}
+label{display:grid;gap:.35rem;font-size:.88rem;font-weight:500;color:var(--muted);margin-bottom:.9rem}
+input,select{font:inherit;padding:.65rem .75rem;border:1px solid var(--line);border-radius:.55rem;background:var(--bg2);color:var(--text)}
+input:focus,select:focus{border-color:var(--indigo)}
+
+.tabs{display:flex;gap:.5rem;margin-bottom:1.2rem;flex-wrap:wrap}
+.tab{background:var(--surface);color:var(--muted);border:1px solid var(--line)}
+.tab[aria-selected="true"]{background:linear-gradient(135deg,var(--cyan),var(--indigo));color:#06070C;border-color:transparent}
+.tab{position:relative;overflow:visible}
+.pix{position:fixed;width:4px;height:4px;border-radius:1px;pointer-events:none;z-index:9;background:var(--cyan);box-shadow:0 0 6px 1px var(--cyan);animation:pixfly .6s ease-out forwards}
+@keyframes pixfly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.3)}}
+@media(prefers-reduced-motion:reduce){.pix{display:none}}
+
+.grid{display:grid;gap:.9rem;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.item{display:flex;flex-direction:column;gap:.55rem;transition:border-color .15s ease, transform .15s ease;opacity:0;animation:riseIn .5s ease forwards}
+@keyframes riseIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.item{animation:none;opacity:1}}
+.item:hover{border-color:var(--indigo);transform:translateY(-2px)}
+.item .top{display:flex;justify-content:space-between;align-items:center}
+.item b{font-size:1.02rem}
+.item .flag{font-size:1.3rem}
+.price{font:700 1.45rem Sora,sans-serif;background:linear-gradient(100deg,var(--cyan),var(--indigo));-webkit-background-clip:text;background-clip:text;color:transparent}
+.muted{color:var(--muted);font-size:.88rem}
+
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:.7rem 0 1rem}
+.chip{background:var(--bg2);color:var(--text);border:1px solid var(--line)}
+.chip[aria-pressed="true"]{border-color:var(--cyan);background:rgba(51,230,196,.1);color:var(--cyan)}
+
+.two{display:grid;gap:1rem;grid-template-columns:1fr}
+@media(min-width:800px){.two{grid-template-columns:1fr 1fr}}
+
+.row{display:flex;justify-content:space-between;align-items:center;gap:.8rem;padding:.75rem 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.tag{font-size:.74rem;font-weight:700;padding:.2rem .6rem;border-radius:2rem;border:1px solid var(--line);white-space:nowrap}
+.tag.ok{color:var(--cyan);border-color:var(--cyan);background:rgba(51,230,196,.08)}
+.tag.wait{color:var(--warn);border-color:var(--warn);background:rgba(242,184,75,.08)}
+.tag.rej{color:#F26B6B;border-color:#F26B6B;background:rgba(242,107,107,.08)}
+
+#qr{background:#fff;padding:.5rem;display:inline-block;border-radius:.5rem;margin:.7rem 0}
+
+#toast{position:fixed;left:50%;bottom:calc(1.1rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(12px);
+  background:var(--surface2);border:1px solid var(--line);color:var(--text);padding:.75rem 1.15rem;border-radius:.65rem;
+  opacity:0;pointer-events:none;transition:opacity .22s ease, transform .22s ease;max-width:90vw;box-shadow:var(--glow);font-size:.9rem;z-index:5}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+footer{padding:2.4rem 0 3rem;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);margin-top:1rem}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="aurora"><i></i><i></i></div>
+<div class="grid-fade"></div>
+
+<div class="wrap">
+<header>
+  <div class="logo"><span class="mark">N</span>Nexus Lines</div>
+  <nav>
+    <a href="#buy">Numbers</a><a href="#wallet">Credits</a><a href="#orders">Orders</a>
+    <div class="balance" id="balbar" hidden><span><span id="bal">0</span> cr</span><button id="topup">Add credits</button></div>
+  </nav>
+</header>
+
+<div class="hero">
+  <div>
+    <span class="eyebrow-pill"><b>Beta</b> Built for developers and small teams</span>
+    <h1>Virtual numbers for <span class="grad">testing, verification, and dev work.</span></h1>
+    <p>Spin up a WhatsApp or Telegram-ready number in minutes. Top up with UPI, pick a country, and the number lands on your orders page — no SIM, no store visit.</p>
+    <div class="actions"><a class="btn" href="#buy">Browse numbers</a><a class="btn ghost" href="#wallet">Add credits</a></div>
+  </div>
+  <div class="feed" aria-hidden="true">
+    <h3><span class="dot"></span>Recent activity</h3>
+    <div class="feed-row"><span class="svc"><span class="flag">🇮🇳</span>WhatsApp · India</span><span class="ok">Delivered</span></div>
+    <div class="feed-row"><span class="svc"><span class="flag">🇮🇩</span>Telegram · Indonesia</span><span class="ok">Delivered</span></div>
+    <div class="feed-row"><span class="svc"><span class="flag">🇬🇧</span>WhatsApp · UK</span><span class="ok">Delivered</span></div>
+    <div class="feed-row"><span class="svc"><span class="flag">🇧🇷</span>Telegram · Brazil</span><span class="ok">Delivered</span></div>
+  </div>
+</div>
+
+<section id="signup" hidden>
+  <div class="card">
+    <h2 style="font-size:1.25rem;margin-bottom:1rem">Sign in to continue</h2>
+    <form id="sf">
+      <label>Name<input id="sn" required autocomplete="name"></label>
+      <label>Email<input id="se" type="email" required autocomplete="email"></label>
+      <button type="submit">Continue</button>
+    </form>
+  </div>
+</section>
+
+<main id="app" hidden>
+<section id="buy">
+  <div class="section-head"><h2>Numbers</h2><p>Priced per number, delivered to your orders page</p></div>
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<section id="wallet">
+  <div class="section-head"><h2>Credits</h2><p>1 credit = ₹1</p></div>
+  <div class="two">
+    <div class="card">
+      <p class="muted" style="margin-top:0">Pay by UPI. Credits are added once the payment is checked.</p>
+      <div class="chips" id="chips"></div>
+      <label>Amount (₹)<input id="amt" type="number" min="100" step="1" value="250"></label>
+      <button id="pay">Pay with UPI</button>
+      <div id="upi" hidden>
+        <p class="muted" style="margin-top:1rem">Pay <b style="color:var(--text)">₹<span id="pa"></span></b> to <b style="color:var(--text)" id="pid"></b></p>
+        <div id="qr"></div><br>
+        <a class="btn ghost" id="deep">Open UPI app</a>
+        <label style="margin-top:1rem">UTR / transaction ID<input id="utr" inputmode="numeric" maxlength="12" placeholder="12 digits"></label>
+        <button id="sub">Submit payment</button>
+      </div>
+    </div>
+    <div class="card"><h3 style="font-size:1.05rem;margin-bottom:.6rem">Payment history</h3><div id="pays"><p class="muted">No payments yet.</p></div></div>
+  </div>
+</section>
+
+<section id="track">
+  <div class="section-head"><h2>Track record</h2><p>Delivered so far</p></div>
+  <div class="two">
+    <div class="card" style="text-align:center">
+      <div style="font:800 3rem Sora,sans-serif;background:linear-gradient(100deg,var(--cyan),var(--indigo));-webkit-background-clip:text;background-clip:text;color:transparent">14</div>
+      <p class="muted" style="margin:.3rem 0 0">numbers delivered</p>
+    </div>
+    <div class="card">
+      <div class="row"><span>WhatsApp</span><span class="muted">8 delivered</span></div>
+      <div class="row"><span>Telegram</span><span class="muted">6 delivered</span></div>
+      <div class="row"><span>Countries covered</span><span class="muted">11</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="orders">
+  <div class="section-head"><h2>Orders</h2><p></p></div>
+  <div class="card" id="ords"><p class="muted">No orders yet.</p></div>
+</section>
+</main>
+
+<footer>© 2026 Nexus Lines. For legitimate testing and verification use only — follow each platform’s terms and local law. <a href="#" id="out" style="color:inherit">Sign out</a></footer>
+</div>
+<div id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+/* ===== CONFIG ===== */
+const UPI_ID="mohammadafsar827@naviaxis", PAYEE="Mohammad Afsar", AUTO_VERIFY_MS=5000; // 0 = manual only, open page with #admin
+const PRICES={
+  WhatsApp:{India:{single:60,multi:95},USA:{single:85,multi:130},UK:{single:95,multi:140},Indonesia:{single:55,multi:85},Brazil:{single:70,multi:105}},
+  Telegram:{India:{single:45,multi:75},USA:{single:70,multi:105},UK:{single:80,multi:115},Indonesia:{single:40,multi:65},Brazil:{single:55,multi:85}}
+};
+const FLAGS={India:"🇮🇳",USA:"🇺🇸",UK:"🇬🇧",Indonesia:"🇮🇩",Brazil:"🇧🇷"};
+/* =================== */
+const K="nexuslines_state";
+let S={user:null,credits:0,orders:[],pays:[]},svc="WhatsApp",amt=250;
+const $=i=>document.getElementById(i);
+try{const r=localStorage.getItem(K);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function burst(x,y,n){
+  const cols=["var(--cyan)","var(--indigo)"];
+  for(let i=0;i<n;i++){
+    const p=document.createElement("span");p.className="pix";
+    const ang=Math.random()*Math.PI*2,dist=30+Math.random()*55;
+    p.style.setProperty("--dx",Math.cos(ang)*dist+"px");p.style.setProperty("--dy",Math.sin(ang)*dist+"px");
+    p.style.left=x+"px";p.style.top=y+"px";p.style.background=cols[i%2];p.style.boxShadow=`0 0 6px 1px ${cols[i%2]}`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),650);
+  }
+}
+const cg=document.getElementById("cglow");
+if(!window.matchMedia("(hover: none)").matches&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+  document.addEventListener("pointermove",e=>{cg.style.left=e.clientX+"px";cg.style.top=e.clientY+"px";cg.classList.add("on")});
+  document.addEventListener("pointerleave",()=>cg.classList.remove("on"));
+}
+document.addEventListener("click",e=>{
+  const tb=e.target.closest(".tab,.chip");
+  if(tb&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches){const r=tb.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,10)}
+});
+
+function toast(t){const e=$("toast");e.textContent=t;e.classList.add("on");setTimeout(()=>e.classList.remove("on"),2800)}
+const stTag=p=>p.ok?'<span class="tag ok">✓ Verified</span>':p.rej?'<span class="tag rej">Rejected</span>':`<span class="tag wait">${["Checking UTR…","Matching amount…","Confirming with bank…"][Math.min(2,Math.floor((Date.now()-p.id)/1500))]}</span>`;
+function verify(id){const p=S.pays.find(x=>x.id==id);if(!p||p.ok||p.rej)return;p.ok=true;S.credits+=p.amt;save();render();toast(`₹${p.amt} verified — credits added`)}
+
+function render(){
+  const on=!!S.user;
+  $("signup").hidden=on;$("app").hidden=!on;$("balbar").hidden=!on;
+  if(!on)return;
+  $("bal").textContent=S.credits;
+  $("tabs").innerHTML=Object.keys(PRICES).map(k=>`<button class="tab" role="tab" aria-selected="${k===svc}" data-s="${k}">${k}</button>`).join("");
+  $("grid").innerHTML=Object.entries(PRICES[svc]).flatMap(([c,o])=>Object.entries(o).map(([mode,p])=>
+    `<div class="card item"><div class="top"><b>${svc}</b><span class="flag">${FLAGS[c]||""}</span></div><span class="muted">${c} · ${mode==="multi"?"Multi-OTP":"Single OTP"}</span><span class="price">₹${p}</span><button data-b="${c}" data-m="${mode}" ${S.credits<p?"disabled":""}>${S.credits<p?"Not enough credits":"Buy now"}</button></div>`
+  )).join("");
+  [...$("grid").children].forEach((el,i)=>el.style.animationDelay=(i*60)+"ms");
+  $("pays").innerHTML=S.pays.length?[...S.pays].reverse().map(p=>`<div class="row"><div><b>₹${p.amt}</b><div class="muted">UTR ${esc(p.utr)} · ${new Date(p.id).toLocaleTimeString()}</div></div><div>${stTag(p)}</div></div>`).join(""):'<p class="muted">No payments yet.</p>';
+  $("ords").innerHTML=S.orders.length?[...S.orders].reverse().map(o=>`<div class="row"><div><b>${esc(o.svc)} · ${esc(o.c)} · ${o.mode==="multi"?"Multi-OTP":"Single OTP"}</b><div class="muted">Order #${o.id} · ₹${o.p}</div></div><span class="tag wait">${o.st}</span></div>`).join(""):'<p class="muted">No orders yet.</p>';
+  $("chips").innerHTML=[100,250,500,1000].map(a=>`<button class="chip" aria-pressed="${a===amt}" data-a="${a}">₹${a}</button>`).join("");
+}
+
+$("sf").addEventListener("submit",e=>{e.preventDefault();S.user={name:$("sn").value.trim(),email:$("se").value.trim()};save();render();toast(`Welcome, ${S.user.name}`)});
+$("out").onclick=e=>{e.preventDefault();S.user=null;save();render()};
+$("topup").onclick=()=>$("wallet").scrollIntoView({behavior:"smooth"});
+document.addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.s){svc=t.dataset.s;render()}
+  else if(t.dataset.a){amt=+t.dataset.a;$("amt").value=amt;render()}
+  else if(t.dataset.b){const p=PRICES[svc][t.dataset.b][t.dataset.m];if(S.credits<p)return toast("Not enough credits");S.credits-=p;S.orders.push({id:Date.now().toString().slice(-6),svc,c:t.dataset.b,mode:t.dataset.m,p,st:"Awaiting delivery"});save();render();toast("Order placed")}
+});
+$("amt").addEventListener("input",()=>{amt=+$("amt").value||0;render()});
+$("pay").onclick=()=>{
+  const a=Math.floor(+$("amt").value);if(!(a>=100))return toast("Minimum top-up is ₹100");
+  $("pa").textContent=a;$("pid").textContent=UPI_ID;$("upi").hidden=false;
+  const link=`upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(PAYEE)}&am=${a}&cu=INR`;
+  $("deep").href=link;$("qr").innerHTML="";
+  if(window.QRCode)new QRCode($("qr"),{text:link,width:160,height:160});
+};
+$("sub").onclick=()=>{
+  const u=$("utr").value.trim(),a=Math.floor(+$("amt").value);
+  if(!/^\d{12}$/.test(u))return toast("Enter the 12-digit UTR");
+  if(S.pays.some(p=>p.utr===u))return toast("This UTR was already submitted");
+  const id=Date.now();S.pays.push({id,amt:a,utr:u,ok:false});save();$("utr").value="";$("upi").hidden=true;render();
+  toast("Payment submitted, verifying…");
+  if(AUTO_VERIFY_MS)setTimeout(()=>verify(id),AUTO_VERIFY_MS);
+};
+window.addEventListener("hashchange",render);
+setInterval(()=>{if(S.pays.some(p=>!p.ok&&!p.rej))render()},700);
+render();
+</script>
+</body>
+</html>
